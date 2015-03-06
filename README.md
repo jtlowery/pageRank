@@ -8,4 +8,8 @@ To Run: python pageRank.py graphName alphaValue convergenceCutoffValue outFileRo
         generated from crawling the engr.uky.edu subdomain with Scrapy, 'stephen' was a similar link graph 
         provided by a classmate (graph file not provided here)
     
+	alpha Value: should be between 1 and 0, 0.85 suggested
+	
+	convergenceCutoffValue: should be much less than 1. 0.0001 suggested.
+	
 	File 'Joel_engr.graph' must be in the same directory to run (or load path must be changed)
