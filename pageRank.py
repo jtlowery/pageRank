@@ -6,7 +6,12 @@ TO RUN: python pageRank.py graphName alphaValue convergenceCutoffValue outFileRo
     graphName = 'example1' or 'example2' or 'example3' are simple hardcoded examples; 'joel' is a link graph 
         generated from crawling the engr.uky.edu subdomain with Scrapy, 'stephen' was a similar link graph 
         provided by a classmate (graph file not provided)
+        
     File 'Joel_engr.graph' must be in the same directory to run (or load path must be changed)
+    
+    alpha Value: should be between 1 and 0, 0.85 suggested
+    
+    convergenceCutoffValue: should be much less than 1. 0.0001 suggested.
 '''
 import sys
 import cPickle as pickle
@@ -15,8 +20,10 @@ import scipy.sparse
 
 
 def loadExampleGraph(graphChoice):
-    '''loads and returns the appropriate graph based on command line selection
-    if no valid selection errors
+    '''
+    loads and returns the appropriate graph (as dict based form 'url': {'out':set(outlinks), 'in':set(inlinks)} 
+    OR 'url': {'out':set(outlinks)}) based on command line selection
+    if no valid selection exits
     '''
    
     if graphChoice == 'stephen':
@@ -163,10 +170,13 @@ def buildLinkGraph(dictInlinksOutlinks):
     return matrixLinkGraph, indexToUrl
     
 def normalizeColumns(matrixIn):
+    '''takes link graph matrrix and convert to csr form and normalizes so columns sum to 1
+    returns normalized link graph in csr form and a  shape n, array of the column sums 
+    '''
     matrixIn = scipy.sparse.csr_matrix(matrixIn, dtype=numpy.float) #build a compressed sparse row matrix
     colSums = numpy.array(matrixIn.sum(axis = 0)) #sums by columns, returns shape 1, n array
     colSums = colSums[0, :] #converts to array of shape n,
-    nonZeroRowIndices, nonZeroColIndices = matrixIn.nonzero() #returns 2 arrays of the indices of nonzero elements
+    nonZeroColIndices = matrixIn.nonzero()[1] #returns tuple of 2 arrays of the indices of nonzero elements, index [1] to select the column indices
     matrixIn.data = matrixIn.data/colSums[nonZeroColIndices] #divide nonzero columns by the column sums
     return matrixIn, colSums
     
